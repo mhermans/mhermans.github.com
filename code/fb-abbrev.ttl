@@ -3,6 +3,7 @@
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix xml: <http://www.w3.org/XML/1998/namespace> .
 
+# Turtle syntax aggregated and parsed from FB on 2009-01-03
 
 # (a) The base FB Person-type
 fb:people.person
