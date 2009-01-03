@@ -1,0 +1,9 @@
+Four requirements:
+* Stable, cool uri
+* Dereferencable
+* Not only rdf, but a html-version for humans/browsers when dereferencing
+* and this without registering/commiting to a domain of my own.
+
+Solution: a Purl, with Apache-content negotiation.
+
+Coining a Purl is as simple as registering a user at purl.org, picking a stable refering url, picking a (variabele) refered url and cliking submit. In my case http://purl.oclc.org/net/mhermans-foaf
