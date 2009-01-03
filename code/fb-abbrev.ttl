@@ -1,0 +1,78 @@
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix fb: <http://rdf.freebase.com/ns/> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xml: <http://www.w3.org/XML/1998/namespace> .
+
+
+# (a) The base FB Person-type
+fb:people.person
+    fb:freebase.type_profile.equivalent_topic   fb:en.person ;
+    fb:type.object.name                         "Person" ;
+    fb:type.type.instance                       fb:en.jack_abramoff ;
+    a fb:type.type .
+
+# (b) The base FB Class-type
+fb:base.ontologies.ontology_class
+    fb:type.object.name         "Ontology Class" ;
+    fb:type.type.instance       fb:en.person ;
+    fb:type.type.properties     fb:base.ontologies.ontology_class.equivalent_classes ;
+    a   fb:freebase.type_profile, 
+        fb:type.type .
+
+# (c) Instance of the class-type (b), i.c.a Person FB Class-type. This 
+# class type is related to the equivalent FB Person type (a) through
+# a equivalent_type property *to* the type, and a equivalent_topic 
+# property *from* the type. This later property requires cooperation 
+# from the type-owner.
+fb:en.person
+    fb:freebase.equivalent_topic.equivalent_type    fb:people.person ;
+    fb:type.object.name                             "Person" ;
+    fb:type.type.instance                           fb:en.angela_bassett ;
+    a   fb:base.ontologies.ontology_class, 
+        fb:base.ontologies.topic, 
+        fb:freebase.equivalent_topic .
+
+# (d) FB (object) property relating a X to the mapping node (e) containing the
+# external class-uri.
+fb:base.ontologies.ontology_class.equivalent_classes
+    fb:type.object.name                 "Equivalent Classes" ;
+    fb:type.property.expected_type      fb:base.ontologies.ontology_class_mapping ;
+    fb:type.property.master_property    fb:base.ontologies.ontology_class_mapping.freebase_topic ;
+    a fb:type.property .
+
+# (e) A kind of nexus type, containing the actual mapping between the external Class-uri 
+# (as a value of the uri-property) and the FB topic (b) (as a value of the freebase_topic-
+# property).
+fb:base.ontologies.ontology_class_mapping
+    fb:type.object.name         "Ontology Class Mapping" ;
+    fb:type.type.expected_by    fb:base.ontologies.ontology.equivalent_classes, 
+                                fb:base.ontologies.ontology_class.equivalent_classes ;
+    fb:type.type.instance       fb:guid.9202a8c04000641f8000000008c9848f ;
+    fb:type.type.properties     fb:base.ontologies.ontology_class_mapping.freebase_topic, 
+                                fb:base.ontologies.ontology_class_mapping.ontology, 
+                                fb:base.ontologies.ontology_class_mapping.uri ;
+    a   fb:freebase.type_profile, 
+        fb:type.type .
+
+# (f) Example of a ontology_class_mapping (e), i.c. between foaf:Person and fb:en.person.
+# This is itself a FB topic
+fb:guid.9202a8c04000641f8000000008c9848f
+    fb:base.ontologies.ontology_class_mapping.freebase_topic    fb:en.person ;
+    fb:base.ontologies.ontology_class_mapping.ontology          fb:en.foaf ;
+    fb:base.ontologies.ontology_class_mapping.uri               "http://xmlns.com/foaf/0.1/Person" ;
+    fb:guid.9202a8c04000641f8000000008ce5fbc                    "foaf" ;
+    a   fb:base.ontologies.ontology_class_mapping, 
+        fb:base.ontologies.topic, 
+        fb:common.topic .
+
+# This is a property relating an instance of a class mapping (e) with the prefix of the 
+# external ontology we are mapping to. Don't know why the propery-sting itself is so opaque...
+fb:guid.9202a8c04000641f8000000008ce5fbc
+    fb:type.object.name "Ontology Namespace" ;
+    a fb:type.property .
+
+# Summary:
+# FB Type ---equivalent_topic---> Instance(b) ---equivalent_classes---> Instance(e) ---uri---> <external Class-URI>
+#    ^-------equivalent_type-------  
+#
+# fb:people.person ---equivalent_topic---> fb:en.person ---equivalent_classes---> fb:guid.920~ ---uri--> foaf:Person
