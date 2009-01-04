@@ -1,4 +1,7 @@
+# Foaf-profile recipe
+
 Four requirements:
+
 * Stable, cool uri
 * Dereferencable
 * Not only rdf, but a html-version for humans/browsers when dereferencing
@@ -24,14 +27,15 @@ The html-document provides a human readable version. This can be a complete "Abo
 
 Practical tips (that worked for me):
 
-For humans is the turtle syntax much more readable en editable than RDF/XML. The community standard appears to be serializing and publishing your profile in RDF/XML though. Tools that come with the redland libraries <link> for instance provide convenient roundtripping between syntaxes (see below for an example).
+For humans the turtle syntax is much more readable en editable than RDF/XML. The community standard appears to be serializing and publishing your profile in RDF/XML though. Tools that come with the redland libraries <link> for instance provide convenient roundtripping between syntaxes (see below for an example).
 
 Use an foaf-generator <link>, or start from an existing foaf-profile:
-
-    $ curl http://example-foaf-file-of-someone/foaf.rdf > foaf.rdf
-    $ rapper -i rdfxml -o turtle > foaf.ttl
-    $ vim foaf.ttl #modify all the properties, delete irrelevant ones.
-    $ rapper -i turtle -o rdfxml-abbrev > foaf.rdf
+    
+    #!/usr/bin/bash
+    $curl http://example-foaf-file-of-someone/foaf.rdf > foaf.rdf
+    $rapper -i rdfxml -o turtle > foaf.ttl
+    $vim foaf.ttl #modify all the properties, delete irrelevant ones.
+    $rapper -i turtle -o rdfxml-abbrev > foaf.rdf
 
 Test it in Tabulator <link>, Disco http://www4.wiwiss.fu-berlin.de/rdf_browser/
 
