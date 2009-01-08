@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # SPARQLpedia API documentation: http://sparqlpedia.org/api.html
 # it is labled a "REST-based protocol", but GET & POST are equivalent...
-
+import urllib
 
 class SPARQLpediaAPI:
     def __init__(self, userName, password):
@@ -16,9 +16,21 @@ class SPARQLpediaAPI:
         pass
 
     def find(self, searchValues):
-        pass
+        submitter = searchValues
+        namespace = None
+        nodes = None
+        args =  {   "action"    : "sparqlmotion",
+                    "id"        : "findQueries",
+                    #"namespace" : namespace,
+                    #"nodes"     : nodes,
+                    "submitter" : submitter
+                }
+        argsEnc = urllib.urlencode(args)
+        responseData = urllib.urlopen(self.endpoint, argsEnc).read() # XXX errorhandling?
+        return responseData
 
 class Query:
     def __init__(self):
         pass
-
+api = SPARQLpediaAPI("mhermans", "passwd")
+print api.find("Holger Knublauch")
