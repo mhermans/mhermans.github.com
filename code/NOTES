@@ -1,0 +1,50 @@
+summary by SPARQL, to cumbersome
+
+def summary(rdfxmlResponseData):
+
+    formats = { 'json' : 'http://www.w3.org/2001/sw/DataAccess/json-sparql/',
+                'xml' : 'http://www.w3.org/2005/sparql-results#'
+                }
+
+    sparqlString = """
+        PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+        PREFIX z:   <http://s.zemanta.com/ns#>
+        PREFIX c: <http://s.opencalais.com/1/pred/>
+        PREFIX owl: <http://www.w3.org/2002/07/owl#>
+                                                           
+        SELECT ?thing ?anchor ?link
+                                                           
+        WHERE {
+                ?thing  rdf:type z:Recognition;
+                        z:anchor ?anchor;
+                        z:object ?object
+                ?object owl:sameAs ?link
+                                                           
+            }
+        ORDER BY ?anchor
+        """
+
+    q = RDF.SPARQLQuery(querystring=sparqlString)
+    
+    m = RDF.Model()
+    p = RDF.Parser()
+    base = RDF.Uri("http://base.com")
+    p.parse_string_into_model(m, rdfxmlResponseData, base)
+    
+    syntax = "xml" #'json' also possible
+
+    sparqlResult = q.execute(m).to_string(formats[syntax]) 
+    tree = ET.ElementTree(ET.fromstring(sparqlResult))
+    r = {}
+    for x in tree.findall('//{http://www.w3.org/2005/sparql-results#}result'):
+        anchor = x.find('./{http://www.w3.org/2005/sparql-results#}binding/{http://www.w3.org/2005/sparql-results#}literal').text
+        uris = x.findall('./{http://www.w3.org/2005/sparql-results#}binding/{http://www.w3.org/2005/sparql-results#}uri')
+        uri = uris[0].text
+        link = uris[1].text
+        if anchor not in r:
+            #print "#####", r.keys(), anchor, "not in r"
+            r[anchor] = {"anchor": anchor, "uri": uri, "links": []}
+        else:
+            r[anchor]["links"].append(link)
+
+    return r

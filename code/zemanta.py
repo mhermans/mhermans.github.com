@@ -1,98 +1,40 @@
+#!/usr/bin/env python
 import urllib, sys, getopt
-from xml.dom.minidom import parseString
-import xml.etree.ElementTree as ET # needs 2.5 XXX check for seperate elementtree install
-import RDF, simplejson
+# A basic API-wrapper for the Zemanta API
+# Lazy loading of simplejson and Redland RDF libraries, depending on serialization
 
-from pprint import pprint            
-# Basic api wrapper for the Zemanta API
-# Needs simplejson and Redland RDF libraries 
-
-def summary(rdfxmlResponseData):
-
-    formats = { 'json' : 'http://www.w3.org/2001/sw/DataAccess/json-sparql/',
-                'xml' : 'http://www.w3.org/2005/sparql-results#'
-                }
-
-    sparqlString = """
-        PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-        PREFIX z:   <http://s.zemanta.com/ns#>
-        PREFIX c: <http://s.opencalais.com/1/pred/>
-        PREFIX owl: <http://www.w3.org/2002/07/owl#>
-                                                           
-        SELECT ?thing ?anchor ?link
-                                                           
-        WHERE {
-                ?thing  rdf:type z:Recognition;
-                        z:anchor ?anchor;
-                        z:object ?object
-                ?object owl:sameAs ?link
-                                                           
-            }
-        ORDER BY ?anchor
-        """
-
-    q = RDF.SPARQLQuery(querystring=sparqlString)
-    
-    m = RDF.Model()
-    p = RDF.Parser()
-    base = RDF.Uri("http://base.com")
-    p.parse_string_into_model(m, rdfxmlResponseData, base)
-    
-    syntax = "xml" #'json' also possible
-
-    sparqlResult = q.execute(m).to_string(formats[syntax]) 
-    tree = ET.ElementTree(ET.fromstring(sparqlResult))
-    r = {}
-    for x in tree.findall('//{http://www.w3.org/2005/sparql-results#}result'):
-        anchor = x.find('./{http://www.w3.org/2005/sparql-results#}binding/{http://www.w3.org/2005/sparql-results#}literal').text
-        uris = x.findall('./{http://www.w3.org/2005/sparql-results#}binding/{http://www.w3.org/2005/sparql-results#}uri')
-        uri = uris[0].text
-        link = uris[1].text
-        if anchor not in r:
-            #print "#####", r.keys(), anchor, "not in r"
-            r[anchor] = {"anchor": anchor, "uri": uri, "links": []}
-        else:
-            r[anchor]["links"].append(link)
-
-    return r
-
-
-
-
-
-
-
+APIKEY = 'up76nfffvzfkhscxbngzvsq' #Invalid; request @http://developer.zemanta.com/apps/register
 
 class ZemantaAPI:
     def __init__(self, apiKey, returnMethod="zemanta.suggest_markup"):
         self.apiKey = apiKey
         self.returnMethod = returnMethod
 
-    def extractEntities(self, data, outputFormat="turtle"):
+    def extractEntities(self, data, outputFormat="rdfxml"):
         """XXX"""
         if outputFormat == "rdfxml":
             return self.queryAPI(data, returnFormat="rdfxml")
 
         elif outputFormat  in ("turtle", "ntriples"):
-            #import RDF
+            import RDF # lazy loauding of librdf XXX switch to rdflib?
             response = self.queryAPI(data, returnFormat="rdfxml")
 
             m = RDF.Model()
             p = RDF.Parser()
             s = RDF.Serializer(outputFormat)
-            base = RDF.Uri("http://base.com")
-            p.parse_string_into_model(m, response["data"], base)
+            base = RDF.Uri("http://base.com") #XXX appropriate base-URI?
+            p.parse_string_into_model(m, response, base)
             return s.serialize_model_to_string(m)
             
         elif outputFormat == "json":
+            import simplejson
             response = self.queryAPI(data, returnFormat="json")
-            print response, len(response)
-            return simplejson.loads(response["data"])
+            return simplejson.loads(response)
 
         else:
-            raise ValueError("Ouputformat not recoginzed/supported") 
+            raise ValueError("Ouputformat not recognized/supported")
 
-    def queryAPI(self, data, returnFormat="rdfxml", summary=True):
+    def queryAPI(self, data, returnFormat="rdfxml"):
         """XXX"""
 
         gateway = 'http://api.zemanta.com/services/rest/0.0/'
@@ -102,66 +44,49 @@ class ZemantaAPI:
                     'return_categories': 'dmoz',
                     'format': returnFormat}            
         args_enc = urllib.urlencode(args)
-
         responseData = urllib.urlopen(gateway, args_enc).read() # XXX errorhandling?
         
-        response = {}
-        response["data"] = responseData
+        return responseData
 
-        if returnFormat == "rdfxml" and summary:
-            response["summary"] = self.summary(responseData)
-        
-        else: response["summary"] = "Summary only implemented for rdfxml return format"
+    def summary(self, rdfData):
+        """Basic summary of the results return by Zemanta."""
 
-        return response
+        import RDF
+        m = RDF.Model()
+        p = RDF.Parser()
+        base = RDF.Uri("http://base.com") #XXX Base-URI?
+        try:
+            p.parse_string_into_model(m, rdfData, base)
+        except RDF.RedlandError:
+            p = RDF.Parser("turtle")
+            try:
+                p.parse_string_into_model(m, rdfData, base)
+            except RDF.RedlandError:
+                p = RDF.Parser("ntriples")
+                try:
+                    p.parse_string_into_model(m, rdfData, base)
+                except RDF.RedLandError:
+                    raise e
 
+        ZEM = RDF.NS('http://s.zemanta.com/ns#')
+        RDFNS = RDF.NS('http://www.w3.org/1999/02/22-rdf-syntax-ns#')
+        OWL = RDF.NS('http://www.w3.org/2002/07/owl#')
 
+        st = RDF.Statement(None, RDFNS.type, ZEM.Recognition)
+        recognitions  = m.find_statements(st) #Returns a RDF.Stream =>  len()?
+        i = 0
+        print "Entities extracted&linked:"
+        print "-"*26
+        for r in recognitions:
+            i = i+1
+            s = r.subject
+            objectLink = m.get_target(s, ZEM.object)
 
+            print m.get_target(s, ZEM.anchor), s
+            for link in m.get_targets(objectLink, OWL.sameAs):
+                print "\tlink", link
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+        print '=> Zemanta found', i , 'entities.'
 
 
 class Usage(Exception):
@@ -173,30 +98,31 @@ def main(argv=None):
         argv = sys.argv
     try:
         try:
-            opts, args = getopt.getopt(argv[1:], "h", ["help"])
+            opts, args = getopt.getopt(argv[1:], "ht", ["help"])
         except getopt.error, msg:
             raise Usage(msg)
-       
-        filename = args[0]
-        f = open(filename, 'r')
-        txt = f.read()
-        f.close()
-
-        myapikey = 'hup76nfffvzfkhscxbngzvsq' #Invalid; request@http://developer.zemanta.com/apps/register
-        zApi = ZemantaAPI(myapikey)
-        result = zApi.extractEntities(txt, "rdfxml")
-        print len(result["summary"]), "entities exctracted by Zemanta:\n"
-        pprint(result["summary"])
-        #print result["data"]
-        result = zApi.extractEntities(txt, "json")
-        pprint
-
+        
+        for o, a in opts:
+            if o == "-t":
+                import doctest
+                doctest.testfile("doctest.txt", globs={"key":APIKEY}) # pass dict with api-key to doctest
+            elif o in ("-h", "--help"):
+                print "..."
+        if len(opts) == 0 and len(argv[1:]) == 1:
+            filename = args[0]
+            f = open(filename, 'r')
+            txt = f.read()
+            f.close()
+                
+            myapikey = APIKEY 
+            zApi = ZemantaAPI(myapikey)
+            result = zApi.extractEntities(txt, "ntriples")
+            zApi.summary(result)
 
     except Usage, err:
         print >>sys.stderr, err.msg
         print >>sys.stderr, "for help use --help"
         return 2
-
 
 if __name__ == "__main__":
     sys.exit(main())

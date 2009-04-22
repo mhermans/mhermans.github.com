@@ -1,0 +1,18 @@
+Tests:
+======
+
+    >>> myapikey = key 
+    >>> txt = """Czech Prime Minister Mirek Topolanek has trampled on the EU's unspoken rule that presidency countries do not offer a controversial opinion on the sensitive topic of the moment. Speaking to MEPs in Strasbourg on Wednesday (14 January), Mr Topolanek, in charge of the EU for the first half of this year, offered only half-hearted support for the EU's new rulebook - seven years in the making and facing an uncertain future - and expressed doubts that Czech citizens would approve it in a referendum."""
+    >>> from zemanta import ZemantaAPI
+    >>> zApi = ZemantaAPI(myapikey)
+    >>> result = zApi.extractEntities(txt, "rdfxml")
+
+#>>> zApi.summary(result) #doctest: +NORMALIZE_WHITESPACE, +REPORT_UDIFF
+
+    >>> result = zApi.extractEntities(txt, "json")
+    >>> from pprint import pprint
+    >>> print len(result)
+    4
+
+# print zApi.extractEntities(txt, "ntriples")
+    
