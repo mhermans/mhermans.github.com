@@ -1,3 +1,8 @@
+Virtualenv workflow
+===================
+
+Kwestie van het volgende keer niet opnieuw te moeten uitzoeken.
+
 Installeer virtualenv globaal
     
     sudo easy_install virtualenv
@@ -21,7 +26,7 @@ Nieuwe virtualenv omgeving aanmaken
 
     mkvirtualenv envnaam
 
-Switch automatisch na aanmaak, anders activeren
+Switched automatisch na aanmaak, anders activeren
 
     workon envnaam
 

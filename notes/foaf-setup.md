@@ -1,4 +1,5 @@
-# Foaf-profile recipe
+Foaf-profile recipe
+====================
 
 Four requirements:
 
