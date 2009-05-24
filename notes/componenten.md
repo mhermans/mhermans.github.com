@@ -43,14 +43,14 @@ Amplifiers
 Varia
 -----
 
-* [Comparator](http://en.wikipedia.org/wiki/Comparator)
+* [Comparator](http://en.wikipedia.org/wiki/Comparator): twee voltages als input, het output-voltage geeft aan welke het grootste is.
     * Via differential amplifier 
     * Geïntegreerd circuit. Bv. LM339
     * [Schmitt trigger](http://en.wikipedia.org/wiki/Schmitt_trigger): Bij een gewone comparator kan een onzuiver signaal rond de threshold een snel state wisselen veroorzaken. Door positieve feedback vermijdt een Schmitt trigger dit.
 * D/A-convertoren
     * [Digital to analog convertor](http://en.wikipedia.org/wiki/Digital-to-analog_converter) (DAC)
     * [Analog to digital convertor](http://en.wikipedia.org/wiki/Analog_to_digital_converter) (ADC): gebruikt comparator
-* Optocoupler: combinatie van een ledje en een foto-gevoelige transitor. Dit geeft een bescherming tussen het schakelcircuit en het te schakelen-circuit.
+* [Optocoupler](http://en.wikipedia.org/wiki/Optocoupler): combinatie van een ledje en een foto-gevoelige transitor. Dit geeft een bescherming tussen het schakelcircuit en het te schakelen-circuit. Werk dus eveneens als een flyback diode.
 
 Componenten met specifieke functionaliteit:
 
