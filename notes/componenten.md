@@ -7,7 +7,7 @@ Transistors
 * [Bipolar junction transistor](http://en.wikipedia.org/wiki/Bipolar_junction_transistor): een "gewoon" transistortje. Heeft een base, emittor en collector. Heeft een versterkingsfactor (gain) voor de ampére. 
     * NPN BJT
     * PNP BJT
-* [Unipolar (junction) transistor](http://en.wikipedia.org/wiki/Field_effect_transistor), of FET: Een field-effect transistor. Werk volgens een ander principe dan de BJP, principe gelijkaardig.
+* [Unipolar (junction) transistor](http://en.wikipedia.org/wiki/Field_effect_transistor), of FET: Een field-effect transistor. Werk volgens een ander principe dan de BJP, maar is in gebruik gelijkaardig.
     * [MOSFET](http://en.wikipedia.org/wiki/MOSFET): het meest voorkomende type van FET. 
 * [Tyristor](http://en.wikipedia.org/wiki/Thyristor): soort van dubbele transistor. Als eenmaal de gate geactiveerd is zal ze blijven geleiden, ook als het voltage op de gate wegvalt.
 * [TRIAC](http://en.wikipedia.org/wiki/TRIAC): dient voor AC te controleren. Werk als een (in twee richtingen) gecombineerde tyristor: als de gate geactiveerd is, blijft er stroom vloeien in beide richtingen.
@@ -21,6 +21,7 @@ Diodes
 * [Flyback diode](http://en.wikipedia.org/wiki/Flyback_diode): Geen apart soort diode, maar verwijst naar het gebruik van een diode bij een inductor (spoel, relais, motor, etc.). Ze wordt parallel met de inductor geplaats, in de omgekeerde richting, zodat er geen stroom "terugvloeit" in het circuit. Meestal een Schottky diode. Andere termen: "free wheeling (clamp) diode for transient suppresion".
 * [Light Emmiting Diode](http://en.wikipedia.org/wiki/Light-emitting_diode) (LED): Laat stroom in één richting vloeien, en produceerd daarbij licht.
 * [Zener diode](http://en.wikipedia.org/wiki/Zener_diode): laat stroom door in de standaard richting, maar ook in de omgekeerde richting als de voltage groter is dan de "breakdown voltage".
+* [DIAC](http://en.wikipedia.org/wiki/DIAC): DIode voor AC, een "dubble diode". Laat dus standaard geen stroom door, tot een bepaald breakdown voltage, waarna stroom in beide richtingen kan vloeien.
 * [Diode bridge/rectifier](http://en.wikipedia.org/wiki/Bridge_rectifier): Vier diodes die samen AC gelijkrichten.
 
 Voltage regulators
@@ -51,6 +52,8 @@ Varia
     * [Digital to analog convertor](http://en.wikipedia.org/wiki/Digital-to-analog_converter) (DAC)
     * [Analog to digital convertor](http://en.wikipedia.org/wiki/Analog_to_digital_converter) (ADC): gebruikt comparator
 * [Optocoupler](http://en.wikipedia.org/wiki/Optocoupler): combinatie van een ledje en een foto-gevoelige transitor. Dit geeft een bescherming tussen het schakelcircuit en het te schakelen-circuit. Werk dus eveneens als een flyback diode.
+* [Digital potentiometer](http://en.wikipedia.org/wiki/Digitally_controlled_potentiometer): digitale versie van een variabele weerstand. Gebruikt een signaal, bv. SPI, en shift-register om de weerstandwaarden te zetten. Bv. AD5204/6 (4/6 channels). 
+
 
 Componenten met specifieke functionaliteit:
 
